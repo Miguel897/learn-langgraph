@@ -1,0 +1,22 @@
+[project]
+name = "learn-langgraph"
+version = "0.1.0"
+description = "Learning playground for LangGraph and LangChain (local Ollama or Anthropic)"
+readme = "README.md"
+authors = [
+    { name = "Miguel897" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "langchain>=1.4.6",
+    "langchain-anthropic>=1.7.6",
+    "langchain-ollama>=1.1.0",
+    "langgraph>=1.2.16",
+    "langgraph-checkpoint-sqlite>=3.1.2",
+    "numpy>=2.5.4",
+    "python-dotenv>=1.2.4",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.6,<0.12.0"]
+build-backend = "uv_build"
