@@ -130,7 +130,7 @@ footer { margin-top: 64px; color: var(--muted); font-size: 13px; border-top: 1px
   <g class="nd acc"><rect x="20" y="102" width="680" height="84" rx="10"/></g>
   <text class="lbl" x="40" y="130">LangGraph  ·  StateGraph runtime</text>
   <text class="sm" x="40" y="150">State · nodes · edges · reducers · Send · Command · interrupt · checkpointers · streaming</text>
-  <text class="sm" x="40" y="170">Your custom workflows and agents live here.  → demos 03–05, 07, 09–11</text>
+  <text class="sm" x="40" y="170">Your custom workflows and agents live here.  → demos 03–05, 07, 09–12</text>
   <g class="nd"><rect x="20" y="204" width="680" height="76" rx="10"/></g>
   <text class="lbl" x="40" y="232">LangChain core  ·  langchain_core</text>
   <text class="sm" x="40" y="252">Chat models (ChatOllama, ChatAnthropic…) · messages · @tool · prompts · Runnables · vector stores</text>
@@ -342,7 +342,7 @@ builder.add_conditional_edges(<span class="s">"plan"</span>, fan_out, [<span cla
       <g class="nd ok"><rect x="610" y="130" width="170" height="44" rx="8"/><text x="695" y="157" text-anchor="middle">writer agent</text></g>
       <path class="e dash" d="M380 70 L190 126" marker-end="url(#ar4)"/><path class="e dash" d="M430 70 V126" marker-end="url(#ar4)"/><path class="e dash" d="M480 70 L670 126" marker-end="url(#ar4)"/>
     </svg>
-    <p>Each sub-agent is a graph of its own. Subgraphs can be added as nodes, or sub-agents can be wrapped as tools. Agents can hand off control by returning <code>Command(goto="agent_name", update={...})</code>. <code>demos/11_multi_agent_supervisor.py</code>: the supervisor writes a focused <em>task</em> for each worker, so each sub-agent sees only what it needs.</p>
+    <p>Each sub-agent is a graph of its own. Subgraphs can be added as nodes (<code>demos/12_subgraphs_and_streaming.py</code>), or sub-agents can be wrapped as tools. Agents can hand off control by returning <code>Command(goto="agent_name", update={...})</code>. <code>demos/11_multi_agent_supervisor.py</code>: the supervisor writes a focused <em>task</em> for each worker, so each sub-agent sees only what it needs.</p>
   </div>
 </div>
 
@@ -383,6 +383,8 @@ builder.add_conditional_edges(<span class="s">"plan"</span>, fan_out, [<span cla
 <tr><td><code>Send</code></td><td>langgraph.types</td><td>Dynamic fan-out: run a node with a custom input, N times in parallel.</td></tr>
 <tr><td><code>Command</code></td><td>langgraph.types</td><td>Update state <em>and</em> jump (<code>goto</code>) from inside a node, or <code>resume</code> after an interrupt.</td></tr>
 <tr><td><code>interrupt()</code></td><td>langgraph.types</td><td>Pause for human input. Needs a checkpointer.</td></tr>
+<tr><td><code>get_stream_writer()</code></td><td>langgraph.config</td><td>Inside a node, emit custom events to <code>stream_mode="custom"</code>.</td></tr>
+<tr><td><code>add_node(name, compiled_graph)</code></td><td>StateGraph method</td><td>Use a whole graph as a node (a subgraph). Shared state keys flow in and out.</td></tr>
 <tr><td><code>InMemorySaver</code></td><td>langgraph.checkpoint.memory</td><td>Checkpointer that enables memory, HITL and time travel.</td></tr>
 <tr><td><code>create_agent</code></td><td>langchain.agents</td><td>Prebuilt agent graph with <code>system_prompt</code>, <code>middleware</code> and <code>response_format</code>.</td></tr>
 <tr><td><code>@tool</code></td><td>langchain_core.tools</td><td>Turns a function into a tool. Type hints and the docstring become its schema.</td></tr>
@@ -395,10 +397,11 @@ builder.add_conditional_edges(<span class="s">"plan"</span>, fan_out, [<span cla
 <div class="table-wrap"><table>
 <tr><th>Mode</th><th>Yields</th><th>Good for</th></tr>
 <tr><td><code>"values"</code></td><td>The full state after each step</td><td>Simple UIs and debugging (demos 05–08)</td></tr>
-<tr><td><code>"updates"</code></td><td><code>{node_name: update}</code> per step</td><td>Seeing which node did what (demos 03, 09)</td></tr>
-<tr><td><code>"messages"</code></td><td>LLM tokens as they are generated, with metadata</td><td>Chat UIs that type out the answer</td></tr>
-<tr><td><code>"custom"</code></td><td>Whatever you emit with <code>get_stream_writer()</code></td><td>Progress bars and tool progress</td></tr>
+<tr><td><code>"updates"</code></td><td><code>{node_name: update}</code> per step</td><td>Seeing which node did what (demos 03, 09, 12)</td></tr>
+<tr><td><code>"messages"</code></td><td><code>(token, metadata)</code> as the LLM generates</td><td>Chat UIs that type out the answer (demo 12)</td></tr>
+<tr><td><code>"custom"</code></td><td>Whatever you emit with <code>get_stream_writer()</code></td><td>Progress bars and tool progress (demo 12)</td></tr>
 </table></div>
+<p>Pass a list such as <code>stream_mode=["custom", "updates"]</code> to get <code>(mode, chunk)</code> pairs. Add <code>subgraphs=True</code> to also see events from inside subgraphs; each item is then prefixed with a namespace tuple such as <code>('research:&lt;task id&gt;',)</code>, which is empty for the parent graph.</p>
 
 <!-- 9 PATH -->
 <h2 id="path"><span class="n">09</span>Learning path (the demos)</h2>
@@ -416,9 +419,11 @@ builder.add_conditional_edges(<span class="s">"plan"</span>, fan_out, [<span cla
   <li><div><code>09_map_reduce_send</code><br><span>Dynamic parallel fan-out with Send and a reducer.</span></div></li>
   <li><div><code>10_persistence_time_travel</code><br><span>SQLite checkpoints, state history, replay and fork.</span></div></li>
   <li><div><code>11_multi_agent_supervisor</code><br><span>Supervisor plus specialist sub-agents, routed with Command(goto=...).</span></div></li>
+  <li><div><code>12_subgraphs_and_streaming</code><br><span>A compiled graph as a node; updates / custom / messages stream modes and subgraphs=True.</span></div></li>
 </ol>
+<p>To check that everything still runs after a change: <code>uv run pytest -m "not llm"</code> takes seconds and needs no model. <code>uv run pytest</code> runs every demo end to end.</p>
 
-<footer>learn-langgraph · written for langgraph 1.2 / langchain 1.4. Curated links are in <code>docs/REFERENCES.md</code>.</footer>
+<footer>learn-langgraph · written for langgraph 1.2 / langchain 1.4 on Python 3.14. Curated links are in <code>docs/REFERENCES.md</code>.</footer>
 </div>
 
 <script>

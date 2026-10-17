@@ -27,7 +27,9 @@ learn-langgraph/
 │   ├── 11_multi_agent_supervisor.py     supervisor delegating to sub-agents (Command)
 │   ├── 12_subgraphs_and_streaming.py    subgraph as a node; updates/custom/messages stream modes
 │   └── output/                          generated .mmd diagrams, sqlite db (git-ignored)
-├── tests/                       # pytest smoke tests (each demo runs end to end)
+├── tests/                       # pytest: tools, config, and each demo run end to end
+├── .github/workflows/tests.yml  # CI: fast tests on every push / PR
+├── CLAUDE.md                    # notes for Claude Code sessions
 ├── .env.example
 └── pyproject.toml               # managed with uv, Python 3.14
 ```
@@ -62,6 +64,8 @@ Each demo begins with a docstring explaining the concepts it covers. Demos that 
 uv run pytest -m "not llm"       # fast: tools + LLM-free demos (seconds)
 uv run pytest                    # everything; LLM demos are skipped if the backend is unreachable
 ```
+
+CI (GitHub Actions) runs the fast set, since no model is available there.
 
 ## Notes on the small local model
 
