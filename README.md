@@ -26,6 +26,7 @@ learn-langgraph/
 │   ├── 10_persistence_time_travel.py    SQLite checkpoints, replay, fork
 │   ├── 11_multi_agent_supervisor.py     supervisor delegating to sub-agents (Command)
 │   └── output/                          generated .mmd diagrams, sqlite db (git-ignored)
+├── tests/                       # pytest smoke tests (each demo runs end to end)
 ├── .env.example
 └── pyproject.toml               # managed with uv, Python 3.14
 ```
@@ -53,6 +54,13 @@ uv run demos/03_state_graph_basics.py
 ```
 
 Each demo begins with a docstring explaining the concepts it covers. Demos that build a graph save a Mermaid diagram to `demos/output/*.mmd`; paste one into <https://mermaid.live> to view it.
+
+## Tests
+
+```powershell
+uv run pytest -m "not llm"       # fast: tools + LLM-free demos (seconds)
+uv run pytest                    # everything; LLM demos are skipped if the backend is unreachable
+```
 
 ## Notes on the small local model
 
