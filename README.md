@@ -27,7 +27,7 @@ learn-langgraph/
 │   ├── 11_multi_agent_supervisor.py     supervisor delegating to sub-agents (Command)
 │   └── output/                          generated .mmd diagrams, sqlite db (git-ignored)
 ├── .env.example
-└── pyproject.toml               # managed with uv
+└── pyproject.toml               # managed with uv, Python 3.14
 ```
 
 ## Setup
