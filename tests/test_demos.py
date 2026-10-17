@@ -23,8 +23,8 @@ def _backend_available() -> bool:
     if s.llm_provider == "anthropic":
         return bool(os.getenv("ANTHROPIC_API_KEY"))
     try:
-        urllib.request.urlopen(f"{s.ollama_base_url}/api/tags", timeout=2)
-        return True
+        with urllib.request.urlopen(f"{s.ollama_base_url}/api/tags", timeout=2):
+            return True
     except OSError:
         return False
 

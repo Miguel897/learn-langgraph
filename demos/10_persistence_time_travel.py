@@ -7,6 +7,7 @@ Concepts:
   * Fork: graph.update_state() writes a modified state as a new branch.
 """
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 from langchain_core.messages import HumanMessage
@@ -24,7 +25,8 @@ builder = StateGraph(MessagesState)
 builder.add_node("chat", lambda s: {"messages": [model.invoke(s["messages"])]})
 builder.add_edge(START, "chat")
 
-with sqlite3.connect(DB, check_same_thread=False) as conn:
+# closing(): a sqlite3 connection's own `with` only commits, it does not close.
+with closing(sqlite3.connect(DB, check_same_thread=False)) as conn:
     graph = builder.compile(checkpointer=SqliteSaver(conn))
     config = {"configurable": {"thread_id": "poet"}}
 
