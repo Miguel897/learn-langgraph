@@ -1,7 +1,5 @@
 """Toy tools shared by the demos. A tool is just a typed, documented Python
 function: the docstring and type hints become the JSON schema the LLM sees."""
-from __future__ import annotations
-
 from langchain_core.tools import tool
 
 _FAKE_WEATHER = {

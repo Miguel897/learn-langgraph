@@ -1,6 +1,4 @@
 """Model factories so every demo can switch between Ollama and Anthropic via .env."""
-from __future__ import annotations
-
 from langchain_core.embeddings import Embeddings
 from langchain_core.language_models import BaseChatModel
 

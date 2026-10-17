@@ -1,6 +1,4 @@
 """Helpers to watch graphs run and to visualise their structure."""
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
 

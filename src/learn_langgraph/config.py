@@ -1,9 +1,7 @@
 """Settings loaded from environment variables (and a local .env file)."""
-from __future__ import annotations
-
 import os
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache
 
 from dotenv import load_dotenv
 
@@ -22,6 +20,6 @@ class Settings:
     anthropic_model: str = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5-5")
 
 
-@lru_cache
+@cache
 def get_settings() -> Settings:
     return Settings()
