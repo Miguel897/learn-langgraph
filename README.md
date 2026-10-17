@@ -25,6 +25,7 @@ learn-langgraph/
 │   ├── 09_map_reduce_send.py            parallel fan-out with Send
 │   ├── 10_persistence_time_travel.py    SQLite checkpoints, replay, fork
 │   ├── 11_multi_agent_supervisor.py     supervisor delegating to sub-agents (Command)
+│   ├── 12_subgraphs_and_streaming.py    subgraph as a node; updates/custom/messages stream modes
 │   └── output/                          generated .mmd diagrams, sqlite db (git-ignored)
 ├── tests/                       # pytest smoke tests (each demo runs end to end)
 ├── .env.example
