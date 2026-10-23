@@ -13,6 +13,7 @@ Learning playground for LangGraph 1.x / LangChain 1.x. Python 3.14, managed with
   `get_chat_model()` / `get_embeddings()` so the `.env` provider switch (`LLM_PROVIDER=ollama|anthropic`) keeps working.
 - `demos/NN_*.py` — numbered lessons, basic → advanced. Each is a standalone script with a
   docstring explaining its concepts; graph demos call `save_mermaid()` (output in `demos/output/`, git-ignored).
+  `demos/mcp_server.py` is a helper MCP server for demo 14, not a lesson (unnumbered, so tests skip it).
 - `tests/test_demos.py` — auto-discovers `demos/[0-9][0-9]_*.py`. A new demo is marked `llm`
   unless it is added to `NO_LLM_DEMOS`; demos that read stdin need an entry in `STDIN`.
 

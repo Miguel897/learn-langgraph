@@ -11,7 +11,8 @@ learn-langgraph/
 │   ├── config.py                #   settings loaded from .env
 │   ├── llm.py                   #   get_chat_model() / get_embeddings() (Ollama or Anthropic)
 │   ├── tools.py                 #   toy tools (weather, add, multiply)
-│   └── display.py               #   stream printing + Mermaid graph export
+│   ├── display.py               #   stream printing + Mermaid graph export
+│   └── tracing.py               #   optional Langfuse tracing (no-op without keys)
 ├── demos/                       # numbered, basic → advanced
 │   ├── 00_check_setup.py
 │   ├── 01_chat_model_basics.py          LangChain: messages, stream, LCEL
@@ -26,6 +27,9 @@ learn-langgraph/
 │   ├── 10_persistence_time_travel.py    SQLite checkpoints, replay, fork
 │   ├── 11_multi_agent_supervisor.py     supervisor delegating to sub-agents (Command)
 │   ├── 12_subgraphs_and_streaming.py    subgraph as a node; updates/custom/messages stream modes
+│   ├── 13_agent_evals.py                eval dataset: trajectory + answer checks, LLM-as-judge, pass-rate gate
+│   ├── 14_mcp_tools.py                  agent using tools from an MCP server (langchain-mcp-adapters)
+│   ├── mcp_server.py                    tiny FastMCP stdio server used by demo 14
 │   └── output/                          generated .mmd diagrams, sqlite db (git-ignored)
 ├── tests/                       # pytest: tools, config, and each demo run end to end
 ├── .github/workflows/tests.yml  # CI: fast tests on every push / PR
@@ -77,4 +81,4 @@ CI (GitHub Actions) runs the fast set, since no model is available there.
   docker exec ollama ollama rm qwen3:4b          # thinking variant, not used by the demos
   docker exec ollama ollama rm qwen3:8b qwen3:8b-32k gemma4:e2b gemma4:e2b-32k   # too big for 4 GB VRAM
   ```
-- Optional tracing: set `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY=...` to inspect every step in LangSmith.
+- Optional tracing: set the `LANGFUSE_*` keys in `.env` (self-hosted Langfuse or Langfuse Cloud) and demo 13 sends each eval case to Langfuse as a trace with its scores. `tracing_config()` adds the same to any demo. LangSmith also works (`LANGSMITH_TRACING=true`, `LANGSMITH_API_KEY=...`) with no code changes.
