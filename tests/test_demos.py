@@ -16,17 +16,25 @@ from learn_langgraph import get_settings
 DEMOS_DIR = Path(__file__).resolve().parents[1] / "demos"
 NO_LLM_DEMOS = {"03_state_graph_basics.py"}
 STDIN = {"07_human_in_the_loop.py": "y\n"}  # answers the approval prompt
+SERVICES = {  # skipped unless reachable (start them with deploy/compose.yaml)
+    "15_n8n_mcp_tools.py": "http://localhost:5678/healthz",
+    "16_api_client.py": "http://localhost:8000/health",
+}
+
+
+def _reachable(url: str) -> bool:
+    try:
+        with urllib.request.urlopen(url, timeout=2):
+            return True
+    except OSError:
+        return False
 
 
 def _backend_available() -> bool:
     s = get_settings()
     if s.llm_provider == "anthropic":
         return bool(os.getenv("ANTHROPIC_API_KEY"))
-    try:
-        with urllib.request.urlopen(f"{s.ollama_base_url}/api/tags", timeout=2):
-            return True
-    except OSError:
-        return False
+    return _reachable(f"{s.ollama_base_url}/api/tags")
 
 
 def _params():
@@ -44,6 +52,8 @@ def backend_available() -> bool:
 def test_demo_runs(demo: Path, request: pytest.FixtureRequest) -> None:
     if request.node.get_closest_marker("llm") and not request.getfixturevalue("backend_available"):
         pytest.skip("LLM backend not reachable")
+    if demo.name in SERVICES and not _reachable(SERVICES[demo.name]):
+        pytest.skip(f"service not running: {SERVICES[demo.name]}")
     result = subprocess.run(
         [sys.executable, str(demo)],
         input=STDIN.get(demo.name, ""),

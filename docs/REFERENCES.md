@@ -31,4 +31,18 @@ A short, opinionated path. Read top to bottom; each item maps to demos in `demos
 - [LangGraph local server / Studio](https://docs.langchain.com/oss/python/langgraph/local-server) — visual debugger for your graphs.
 - [ChatOllama integration](https://docs.langchain.com/oss/python/integrations/chat/ollama) and [Ollama Qwen3 models](https://ollama.com/library/qwen3) — local models used here.
 
+## 5. Beyond the basics (demos 13–15, `deploy/`)
+| Resource | Why read it | Where |
+|----------|-------------|-------|
+| [LangSmith evaluation](https://docs.langchain.com/langsmith/evaluation) | Datasets, evaluators, experiments; the hosted version of demo 13. | 13 |
+| [Langfuse LangChain integration](https://langfuse.com/docs/integrations/langchain/tracing) | CallbackHandler, traces and scores; self-host or cloud. | 13, `tracing.py` |
+| [Model Context Protocol](https://modelcontextprotocol.io) | The spec and SDKs behind demos 14 and 15. | 14, 15 |
+| [langchain-mcp-adapters](https://github.com/langchain-ai/langchain-mcp-adapters) | `MultiServerMCPClient`: MCP tools as LangChain tools. | 14, 15 |
+| [n8n MCP Server Trigger](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.mcptrigger/) | Exposing n8n workflows as MCP tools. | 15 |
+| [n8n Docker / queue mode](https://docs.n8n.io/hosting/) | Self-hosting n8n properly (Postgres, Redis workers). | `deploy/` |
+| [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) | Postgres checkpointer used by the API. | `deploy/api` |
+| [LangGraph deployment options](https://docs.langchain.com/oss/python/langgraph/deploy) | Agent Server / LangSmith Deployment, the "buy" alternative to `app.py`. | `deploy/` |
+
+See also [NOTES.md](NOTES.md) for what was learned building these.
+
 > Tip: the docs site publishes [`llms.txt`](https://docs.langchain.com/llms.txt), an index you can point Claude Code at so its answers are grounded in the current docs.

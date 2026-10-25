@@ -14,6 +14,9 @@ Learning playground for LangGraph 1.x / LangChain 1.x. Python 3.14, managed with
 - `demos/NN_*.py` — numbered lessons, basic → advanced. Each is a standalone script with a
   docstring explaining its concepts; graph demos call `save_mermaid()` (output in `demos/output/`, git-ignored).
   `demos/mcp_server.py` is a helper MCP server for demo 14, not a lesson (unnumbered, so tests skip it).
+- `deploy/` — Docker stack (`compose.yaml`: FastAPI agent API + Postgres + n8n); run guide in `deploy/README.md`,
+  lessons in `docs/NOTES.md`. Demos 15 (n8n) and 16 (API) need it;
+  `tests/test_demos.py` skips demos listed in `SERVICES` when their URL is unreachable.
 - `tests/test_demos.py` — auto-discovers `demos/[0-9][0-9]_*.py`. A new demo is marked `llm`
   unless it is added to `NO_LLM_DEMOS`; demos that read stdin need an entry in `STDIN`.
 

@@ -1,0 +1,48 @@
+# Local "production-like" stack:  docker compose -f deploy/compose.yaml up -d --build
+#   api       FastAPI serving a LangGraph agent, state in Postgres   -> http://localhost:8000/docs
+#   postgres  checkpointer storage (host port 5433 to avoid clashes)
+#   n8n       workflow platform exposing a workflow as MCP tools      -> http://localhost:5678
+# Ollama keeps running in its own container; the api reaches it via host.docker.internal.
+name: learn-langgraph
+
+services:
+  postgres:
+    image: postgres:18-alpine # newest stable major (19 is still a release candidate)
+    environment:
+      POSTGRES_USER: langgraph
+      POSTGRES_PASSWORD: langgraph # local only; use a secret in real deployments
+      POSTGRES_DB: langgraph
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: [pgdata:/var/lib/postgresql] # 18+ keeps data in a versioned subfolder here
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langgraph"]
+      interval: 2s
+      retries: 15
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    env_file:
+      - path: ../.env
+        required: false
+    environment: # these win over .env
+      DATABASE_URL: postgresql://langgraph:langgraph@postgres:5432/langgraph
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  n8n:
+    image: n8nio/n8n:2.44.6
+    environment:
+      GENERIC_TIMEZONE: UTC # set your own zone (e.g. America/New_York) for schedule triggers
+      N8N_DIAGNOSTICS_ENABLED: "false"
+    ports: ["127.0.0.1:5678:5678"]
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n:/import:ro # workflow JSON to import (see README "Deploy")
+
+volumes:
+  pgdata:
+  n8n_data:

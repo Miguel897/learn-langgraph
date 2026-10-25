@@ -6,7 +6,8 @@ A hands-on playground for learning **LangGraph** and **LangChain**, running on a
 learn-langgraph/
 ├── docs/
 │   ├── langgraph-intro.html     # visual intro: key classes, patterns, diagrams (open in a browser)
-│   └── REFERENCES.md            # short curated reading list
+│   ├── REFERENCES.md            # short curated reading list
+│   └── NOTES.md                 # technical notes: evals, tracing, MCP, n8n, serving, gotchas
 ├── src/learn_langgraph/         # shared core library used by every demo
 │   ├── config.py                #   settings loaded from .env
 │   ├── llm.py                   #   get_chat_model() / get_embeddings() (Ollama or Anthropic)
@@ -29,8 +30,16 @@ learn-langgraph/
 │   ├── 12_subgraphs_and_streaming.py    subgraph as a node; updates/custom/messages stream modes
 │   ├── 13_agent_evals.py                eval dataset: trajectory + answer checks, LLM-as-judge, pass-rate gate
 │   ├── 14_mcp_tools.py                  agent using tools from an MCP server (langchain-mcp-adapters)
+│   ├── 15_n8n_mcp_tools.py              agent using an n8n workflow as MCP tools (needs the deploy stack)
+│   ├── 16_api_client.py                 HTTP client for the deployed agent: threads, SSE streaming (needs the deploy stack)
 │   ├── mcp_server.py                    tiny FastMCP stdio server used by demo 14
 │   └── output/                          generated .mmd diagrams, sqlite db (git-ignored)
+├── deploy/                      # Docker stack: see "Deploy" below
+│   ├── README.md                #   run guide, troubleshooting, production checklist
+│   ├── compose.yaml             #   api + postgres + n8n
+│   ├── Dockerfile               #   uv-based image for the api
+│   ├── api/app.py               #   FastAPI serving an agent, Postgres checkpointer, SSE streaming
+│   └── n8n/toolbox.workflow.json  # n8n workflow exposing tools via the MCP Server Trigger
 ├── tests/                       # pytest: tools, config, and each demo run end to end
 ├── .github/workflows/tests.yml  # CI: fast tests on every push / PR
 ├── CLAUDE.md                    # notes for Claude Code sessions
@@ -61,6 +70,17 @@ uv run demos/03_state_graph_basics.py
 ```
 
 Each demo begins with a docstring explaining the concepts it covers. Demos that build a graph save a Mermaid diagram to `demos/output/*.mmd`; paste one into <https://mermaid.live> to view it.
+
+## Deploy (API + Postgres + n8n)
+
+A local, production-like Docker stack: the agent served by FastAPI with conversations in Postgres, plus n8n exposing a workflow as MCP tools (used by demo 15).
+
+```powershell
+docker compose -f deploy/compose.yaml up -d --build
+# one-time n8n workflow import/publish: see deploy/README.md
+```
+
+API docs at <http://localhost:8000/docs>, n8n at <http://localhost:5678>. Full guide, troubleshooting and a production checklist: [deploy/README.md](deploy/README.md). Lessons learned: [docs/NOTES.md](docs/NOTES.md).
 
 ## Tests
 
